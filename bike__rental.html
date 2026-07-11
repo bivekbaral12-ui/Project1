@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KTM Bike Rentals | Kathmandu Valley</title>
+    <style>
+      /* --- CSS Variables & Reset --- */
+      :root {
+        --primary-color: #ff6600;
+        --bg-dark: #121212;
+        --bg-card: #1e1e1e;
+        --text-light: #f3f4f6;
+        --text-muted: #9ca3af;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", system-ui, sans-serif;
+      }
+      body {
+        background-color: var(--bg-dark);
+        color: var(--text-light);
+        line-height: 1.6;
+      }
+
+      /* --- Navigation --- */
+      header {
+        background-color: rgba(18, 18, 18, 0.95);
+        padding: 1rem 5%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 100;
+        border-bottom: 1px solid #333;
+      }
+      .logo {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--text-light);
+        text-decoration: none;
+        letter-spacing: 1px;
+      }
+      .logo span {
+        color: var(--primary-color);
+      }
+      nav a {
+        color: var(--text-light);
+        text-decoration: none;
+        margin-left: 2rem;
+        font-weight: 500;
+        transition: color 0.3s ease;
+      }
+      nav a:hover {
+        color: var(--primary-color);
+      }
+
+      /* --- Hero Section --- */
+      .hero {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 0 20px;
+        background:
+          linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.8)),
+          url("https://images.unsplash.com/photo-1558981403-c5f9899a28bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80")
+            center/cover;
+      }
+      .hero h1 {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+      }
+      .hero p {
+        font-size: 1.2rem;
+        color: var(--text-muted);
+        margin-bottom: 2rem;
+        max-width: 600px;
+      }
+
+      .btn {
+        padding: 0.8rem 2rem;
+        background-color: var(--primary-color);
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+        font-size: 1.1rem;
+        transition:
+          transform 0.2s ease,
+          background-color 0.2s;
+      }
+      .btn:hover {
+        background-color: #e65c00;
+        transform: translateY(-2px);
+      }
+
+      /* --- Shared Grid (Fleet & Routes) --- */
+      .section-padding {
+        padding: 5rem 5%;
+        text-align: center;
+      }
+      .section-padding h2 {
+        font-size: 2.5rem;
+        margin-bottom: 3rem;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+      }
+      .card {
+        background-color: var(--bg-card);
+        border-radius: 8px;
+        overflow: hidden;
+        text-align: left;
+        transition: transform 0.3s ease;
+      }
+      .card:hover {
+        transform: translateY(-10px);
+      }
+      .card img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+      }
+      .card-content {
+        padding: 1.5rem;
+      }
+      .card-title {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      /* --- Fleet Specifics --- */
+      .price {
+        color: var(--primary-color);
+        font-size: 1.25rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+      }
+      .card-btn {
+        width: 100%;
+        text-align: center;
+        display: block;
+      }
+
+      /* --- FAQ Accordion --- */
+      .faq-container {
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: left;
+      }
+      .faq-item {
+        background-color: var(--bg-card);
+        margin-bottom: 1rem;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .faq-question {
+        padding: 1.5rem;
+        font-size: 1.2rem;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: background-color 0.3s ease;
+      }
+      .faq-question:hover {
+        background-color: #2a2a2a;
+        color: var(--primary-color);
+      }
+      .faq-answer {
+        padding: 0 1.5rem;
+        max-height: 0;
+        overflow: hidden;
+        transition:
+          max-height 0.3s ease,
+          padding 0.3s ease;
+        color: var(--text-muted);
+      }
+      .faq-item.active .faq-answer {
+        padding: 0 1.5rem 1.5rem 1.5rem;
+        max-height: 200px;
+      }
+      .faq-item.active .faq-question::after {
+        transform: rotate(180deg);
+      }
+      .faq-question::after {
+        content: "▼";
+        font-size: 0.8rem;
+        transition: transform 0.3s ease;
+      }
+
+      /* --- Booking Modal --- */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(5px);
+        justify-content: center;
+        align-items: center;
+      }
+      .modal-content {
+        background-color: var(--bg-card);
+        padding: 2.5rem;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 500px;
+        position: relative;
+        animation: slideUp 0.3s ease;
+      }
+      @keyframes slideUp {
+        from {
+          transform: translateY(50px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      .close-btn {
+        position: absolute;
+        top: 1rem;
+        right: 1.5rem;
+        color: var(--text-muted);
+        font-size: 2rem;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      .close-btn:hover {
+        color: var(--primary-color);
+      }
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--text-muted);
+      }
+      .form-group input {
+        width: 100%;
+        padding: 0.8rem;
+        background-color: #2a2a2a;
+        border: 1px solid #444;
+        color: white;
+        border-radius: 4px;
+        font-size: 1rem;
+      }
+      .form-group input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+      }
+
+      footer {
+        background-color: #0a0a0a;
+        padding: 2rem;
+        text-align: center;
+        color: var(--text-muted);
+        border-top: 1px solid #333;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a href="#" class="logo">KTM<span>Rentals</span></a>
+      <nav>
+        <a href="#home">Home</a>
+        <a href="#fleet">Our Fleet</a>
+        <a href="#routes">Routes</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+    </header>
+
+    <section class="hero" id="home">
+      <h1>Ready to Ride?</h1>
+      <p>
+        Explore the valley on premium KTM motorcycles. Daily, weekly, and
+        monthly rentals available with zero hassle.
+      </p>
+      <a href="#fleet" class="btn">View Available Bikes</a>
+    </section>
+
+    <section class="section-padding" id="fleet">
+      <h2>Choose Your Beast</h2>
+      <div class="grid">
+        <div class="card">
+          <img src="images/duke3900.jpg" alt="KTM Duke 200" />
+          <div class="card-content">
+            <h3 class="card-title">KTM Duke 200</h3>
+            <p class="price">Rs. 2,500 / day</p>
+            <p style="margin-bottom: 1rem; color: var(--text-muted)">
+              Perfect for navigating city traffic with aggressive styling.
+            </p>
+            <button class="btn card-btn rent-button" data-bike="KTM Duke 200">
+              Rent Now
+            </button>
+          </div>
+        </div>
+        <div class="card">
+          <img src="images/rc3900.jpg" alt="KTM RC 390" />
+          <div class="card-content">
+            <h3 class="card-title">KTM RC 390</h3>
+            <p class="price">Rs. 4,500 / day</p>
+            <p style="margin-bottom: 1rem; color: var(--text-muted)">
+              Track-ready genetics built for the open highway.
+            </p>
+            <button class="btn card-btn rent-button" data-bike="KTM RC 390">
+              Rent Now
+            </button>
+          </div>
+        </div>
+        <div class="card">
+          <img src="images/adv3900.jpg" alt="KTM Adventure 390" />
+          <div class="card-content">
+            <h3 class="card-title">Adventure 390</h3>
+            <p class="price">Rs. 5,000 / day</p>
+            <p style="margin-bottom: 1rem; color: var(--text-muted)">
+              Built for long journeys and off-road trails.
+            </p>
+            <button class="btn card-btn rent-button" data-bike="Adventure 390">
+              Rent Now
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="section-padding"
+      id="routes"
+      style="background-color: #171717"
+    >
+      <h2>Top Rides Around the Valley</h2>
+      <div class="grid">
+        <div class="card">
+          <img
+            src="https://images.unsplash.com/photo-1544735716-392fe2449fee?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+            alt="Nagarkot"
+          />
+          <div class="card-content">
+            <h3 class="card-title">Nagarkot Sunrise</h3>
+            <p style="color: var(--text-muted)">
+              A beautifully winding 30km ride from the city center, perfect for
+              catching the Himalayas at dawn.
+            </p>
+          </div>
+        </div>
+        <div class="card">
+          <img src="images/shivapuri.png" alt="Shivapuri" />
+          <div class="card-content">
+            <h3 class="card-title">Shivapuri Trails</h3>
+            <p style="color: var(--text-muted)">
+              Take the Adventure 390 off the beaten path and explore the rugged
+              trails of the national park.
+            </p>
+          </div>
+        </div>
+        <div class="card">
+          <img
+            src="images/dhulikhel.png""
+            alt="Dhulikhel"
+          />
+          <div class="card-content">
+            <h3 class="card-title">Dhulikhel Highway</h3>
+            <p style="color: var(--text-muted)">
+              A smooth, multi-lane highway cruise ending in a picturesque
+              ancient Newari town.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-padding" id="faq">
+      <h2>Frequently Asked Questions</h2>
+      <div class="faq-container">
+        <div class="faq-item">
+          <div class="faq-question">Do I need a special license?</div>
+          <div class="faq-answer">
+            Yes, you need a valid motorcycle license (Category A) from your home
+            country or an International Driving Permit.
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">Is insurance included in the price?</div>
+          <div class="faq-answer">
+            Basic third-party insurance is included. Comprehensive coverage is
+            available for an additional Rs. 500 per day.
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">Do I need to leave a deposit?</div>
+          <div class="faq-answer">
+            Yes, we require a refundable security deposit of Rs. 10,000 and a
+            physical copy of your passport or citizenship card.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>&copy; 2026 KTM Rentals. Built for the ride.</p>
+    </footer>
+
+    <div id="bookingModal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn" id="closeModal">&times;</span>
+        <h2 style="margin-bottom: 1.5rem; color: var(--primary-color)">
+          Book <span id="modalBikeName"></span>
+        </h2>
+        <form id="rentalForm">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" placeholder="Enter your name" required />
+          </div>
+          <div class="form-group">
+            <label>Pickup Date</label>
+            <input type="date" required />
+          </div>
+          <div class="form-group">
+            <label>Drop-off Date</label>
+            <input type="date" required />
+          </div>
+          <button type="submit" class="btn" style="width: 100%">
+            Confirm Booking Request
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      // 1. Smooth Scrolling
+      document.querySelectorAll("nav a, .hero a").forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          const targetId = this.getAttribute("href").substring(1);
+          const targetElement = document.getElementById(targetId);
+          window.scrollTo({
+            top: targetElement.offsetTop - 70,
+            behavior: "smooth",
+          });
+        });
+      });
+
+      // 2. FAQ Accordion Logic
+      const faqItems = document.querySelectorAll(".faq-item");
+      faqItems.forEach((item) => {
+        const question = item.querySelector(".faq-question");
+        question.addEventListener("click", () => {
+          // Close other open FAQs
+          faqItems.forEach((otherItem) => {
+            if (otherItem !== item) otherItem.classList.remove("active");
+          });
+          // Toggle current FAQ
+          item.classList.toggle("active");
+        });
+      });
+
+      // 3. Modal Logic
+      const modal = document.getElementById("bookingModal");
+      const closeBtn = document.getElementById("closeModal");
+      const rentButtons = document.querySelectorAll(".rent-button");
+      const modalBikeName = document.getElementById("modalBikeName");
+      const rentalForm = document.getElementById("rentalForm");
+
+      // Open modal when 'Rent Now' is clicked
+      rentButtons.forEach((button) => {
+        button.addEventListener("click", (e) => {
+          const bikeName = e.target.getAttribute("data-bike");
+          modalBikeName.textContent = bikeName; // Set the bike name in the modal title
+          modal.style.display = "flex"; // Show modal
+        });
+      });
+
+      // Close modal when 'X' is clicked
+      closeBtn.addEventListener("click", () => {
+        modal.style.display = "none";
+      });
+
+      // Close modal when clicking outside the modal box
+      window.addEventListener("click", (e) => {
+        if (e.target === modal) {
+          modal.style.display = "none";
+        }
+      });
+
+      // Handle Form Submission
+      rentalForm.addEventListener("submit", (e) => {
+        e.preventDefault(); // Prevent page reload
+        alert("Booking request received! We will contact you shortly.");
+        modal.style.display = "none"; // Close modal after submission
+        rentalForm.reset(); // Clear the form fields
+      });
+    </script>
+  </body>
+</html>
